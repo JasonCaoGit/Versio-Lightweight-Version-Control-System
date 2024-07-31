@@ -32,6 +32,8 @@ public class Commit implements Serializable {
     private String UID;
     //sth for file name
     private Map<String,String> filesMap;
+    private ArrayList<String> secondParent;
+
 
 
 
@@ -104,6 +106,20 @@ public class Commit implements Serializable {
         Branch.setNewCommit(this.UID);
         save();
     }
+
+    public Commit(String message, ArrayList<String> parentCommit, ArrayList<String> secondParent, Map<String,String> filesMap) {
+        this.timeStamp = new Date().toString();
+        this.parentCommit = parentCommit;
+        this.secondParent = secondParent;
+        this.filesMap = filesMap;
+        this.message = message;
+        setUID(Utils.sha1(timeStamp, message, parentCommit.toString(), filesMap.toString()));
+        Head.setHead(this.UID);
+
+        Branch.setNewCommit(this.UID);
+        save();
+    }
+
 
     public void save() {
         Repository.COMMITS_DIR.mkdir();

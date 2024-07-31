@@ -3,6 +3,7 @@ package gitlet;
 import java.io.File;
 import static gitlet.Utils.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -85,6 +86,16 @@ public class Repository {
     public static final File STAGING_AREA = join(GITLET_DIR, "StagingArea");
     public static final File Head_DIR = join(GITLET_DIR, "HEAD");
     public static final File Branches_DIR = join(GITLET_DIR, "Branches");
+
+
+    public static String readByteObjectAsString(File blobToRead) {
+        byte[] byteObject = Utils.readObject(blobToRead, byte[].class);
+        return new String(byteObject, StandardCharsets.UTF_8);
+    }
+
+
+
+
     /*
     * Merge files in the given branch to the current
     * The split point is the earliest common parent commits of two commits
@@ -185,7 +196,9 @@ first.
         Commit givenBranchCommit = Commit.findCommitByUID(givenBranch.getCurrentCommit());
         //now we have the two branch commits, get their ancestor list
         ArrayList<String> currentAncestorList = currentBranchCommit.getParentCommit();
+        currentAncestorList.add(currentBranchCommitID);
         ArrayList<String> givenAncestorList = givenBranchCommit.getParentCommit();
+        givenAncestorList.add(givenBranch.getCurrentCommit());
 
         //find the right list to iterate
         ArrayList<String> listToIterate = null;
@@ -206,9 +219,277 @@ first.
             }
 
         }
+        if(theFirstAncestorNotEqual == -1) {
+            theFirstAncestorNotEqual = listToIterate.size();
+        }
         String splitPoint = listToIterate.get(theFirstAncestorNotEqual - 1);
         System.out.println(splitPoint);
         // now we can find the split point
+
+
+
+
+
+//            * Merge files in the given branch to the current
+//    * The split point is the earliest common parent commits of two commits
+//    * Several scenarios regarding the split point
+//    * 1 if the split point is the same commit as the given branch
+//    * do nothing. Display  Given branch is an ancestor of the current branch.
+//    * 2 if the split point is the current branch
+//    * then we checkout the given branch and displays Current branch fast-forwarded
+//    *
+    System.out.println(givenBranch.getCurrentCommit());
+        if(splitPoint.equals(givenBranch.getCurrentCommit())) {
+
+            System.out.println("Given branch is an ancestor of the current branch.");
+        }
+        if (splitPoint.equals(currentBranchCommit.getUID())) {
+            checkoutBranch(givenBranch.getBranchName());
+            System.out.println("Current branch fast-forwarded");
+        }
+
+/*            * If not the scenarios above do the following
+    *1 If a  file that is modified btween given branch and the split point
+    * but is not modified in the current branch, change it to the version in the given branch
+    * The files will be staged(overwrite and stage)
+    *
+    * 2 if a file that is modified in the current branch but not in the given branch
+    * stay the same
+    * 3 If a file is modified in the same way, same content or both removed,
+    * are left unchanged. If a file was removed from both, and it is still in the CWD
+    * do not track it or stage it*/
+        //If a file's blob is different between given branch and split point, same between current branch and ...,
+        /*
+        * Checkout that file in the given branch, stage the file
+        * */
+        //Have to find all files in all three commits
+        Map<String, String> filesInSplitPoint = Commit.findCommitByUID(splitPoint).getFilesMap();
+        Map<String, String> filesInCurrentBranch = currentBranchCommit.getFilesMap();
+        Map<String, String> filesInGivenBranch = givenBranchCommit.getFilesMap();
+        ArrayList<String> filesToIterate = new ArrayList<>();
+        for(String file: filesInSplitPoint.keySet()) {
+            filesToIterate.add(file);
+        }
+
+        //For everything in current branch commit map
+        for(String file: filesInCurrentBranch.keySet()) {
+            //if my list does not includ that file name
+            if (!filesToIterate.contains(file)) {
+                filesToIterate.add(file);
+            }
+        }
+
+        for(String file: filesInGivenBranch.keySet()) {
+            if (!filesToIterate.contains(file)) {
+                filesToIterate.add(file);
+            }
+        }
+
+//        *1 If a  file that is modified between given branch and the split point
+//    * but is not modified in the current branch, change it to the version in the given branch
+//    * The files will be staged(overwrite and stage)
+//    *
+
+        //Iterate through all the files in the three commits
+        for(String file: filesToIterate) {
+            String currentBranchBlob = filesInCurrentBranch.get(file);
+            String givenBranchBlob = filesInGivenBranch.get(file);
+            String splitPointBlob = filesInSplitPoint.get(file);
+            //First case
+            if(currentBranchBlob!= null && givenBranchBlob!= null && splitPointBlob != null) {
+                if(!splitPointBlob.equals(givenBranchBlob) && splitPointBlob.equals(currentBranchBlob)) {
+                //checkout the file in the given branch and add it
+                checkoutFile(givenBranchCommit.getUID(), file);
+                add(file);
+            }
+                 if(!splitPointBlob.equals(currentBranchBlob) && splitPointBlob.equals(givenBranchBlob)) {
+                continue;
+            }
+
+            }
+
+   /*           * 2 if a file that is modified in the current branch but not in the given branch
+    * stay the same*/
+
+//            * 3 If a file is modified in the same way, same content or both removed,
+//    * are left unchanged. If a file was removed from both, and it is still in the CWD
+//    * do not track it or stage it*/
+            //if it is not contained in both
+            boolean isRemovedInBoth = false;
+            if (splitPointBlob != null) {
+                  if(currentBranchBlob == null && givenBranchBlob == null) {
+                isRemovedInBoth = true;
+            }
+            }
+
+
+
+            ArrayList<String> CWDFiles = listAllFiles(CWD);
+            if (currentBranchBlob != null) {
+                   if(currentBranchBlob.equals(givenBranchBlob) || isRemovedInBoth)  {
+
+                if (CWDFiles.contains(file)) {
+                    if(stagingArea.containsKey(file)) {
+                        stagingArea.remove(file);
+                    StagingArea.saveStagingArea(stagingArea);
+
+                    }
+
+                }
+            }
+            }
+
+
+//                * 4 If a file is not in the split point and the given branch
+//    *  but is in the current branch only, remain the same
+            if(splitPointBlob==null && givenBranchBlob == null &&currentBranchBlob != null) {
+                continue;
+            }
+//
+//               * 5 If a file not in the split point and the current branch
+//    * , only in the given branch, checkout that file and stage it
+            if(splitPointBlob==null && currentBranchBlob == null && givenBranchBlob != null) {
+                checkoutFile(givenBranchCommit.getUID(), file);
+                stagingArea.put(file, givenBranchCommit.getFilesMap().get(file));
+                StagingArea.saveStagingArea(stagingArea);
+            }
+
+
+
+
+
+
+
+
+
+
+//    * 6 If a file is in the split point, unchanged in the current branch, and not in the given branch
+//    * remove it and do not track it in the merge commit
+            if (splitPointBlob != null && currentBranchBlob.equals(splitPointBlob) && givenBranchBlob == null) {
+                if(stagingArea.containsKey(file)) {
+                    stagingArea.remove(file);
+                    StagingArea.saveStagingArea(stagingArea);
+                }
+
+                if(CWDFiles.contains(file)) {
+                    File fileToDelete = Utils.join(CWD, file);
+                    Utils.restrictedDelete(fileToDelete);
+
+                }
+            }
+
+//    * 7 If a file is at the split point, unchanged in  the given branch, and not in the current branch,
+//    * it will not be tracked in the merge commit
+            if (givenBranchBlob != null) {
+                 if (splitPointBlob!= null && givenBranchBlob.equals(splitPointBlob) && currentBranchBlob == null) {
+                if(stagingArea.containsKey(file)) {
+                    stagingArea.remove(file);
+                    StagingArea.saveStagingArea(stagingArea);
+                }
+            }
+            }
+
+
+//    * 8 Any files that are modified differently are in conflict
+//    *They could be modified differently or one is changed and another is delteld
+//               * If a conflict happens replace the conflict file to this:
+//    * <<<<<<< HEAD
+//contents of file in current branch
+//=======
+//contents of file in given branch
+//>>>>>>>
+//* fill blank if it is deleted in one branch
+//* and stage this file to addition.
+
+            //determine if both modified in a different way
+            boolean mergeConflict = false;
+            //if two branches all contain the files and they are not equal to each other
+            if(currentBranchBlob != null && givenBranchBlob != null) {
+                if(!currentBranchBlob.equals(givenBranchBlob)) {
+                    mergeConflict = true;
+                }
+
+            }
+            //if is deleted in one branch and changed in another
+            //if split point has the file
+            if (splitPointBlob != null) {
+                //also given branch has the file and changed the content
+                if (givenBranchBlob != null) {
+                    //current branch delete the file
+                       if(currentBranchBlob == null && !splitPoint.equals(givenBranchBlob)) {
+                           mergeConflict = true;
+
+                }
+                }
+
+                //vice versa for the opposite
+                 if (currentBranchBlob != null) {
+                    //current branch delete the file
+                       if(givenBranchBlob == null && !splitPoint.equals(currentBranchBlob)) {
+                           mergeConflict = true;
+
+                }
+                }
+
+
+
+            }
+            //tested
+            if(mergeConflict) {
+                String conflictContent = "<<<<<<< HEAD" + "\n";
+                if (currentBranchBlob != null) {
+                    File currentFileContent = Utils.join(BLOBS_DIR, currentBranchBlob);
+                    //Write the content into a file first and do it
+                    conflictContent += readByteObjectAsString(currentFileContent);
+
+                } else {
+                    conflictContent += "";
+                }
+                conflictContent += "=======" + "\n";
+                if (givenBranchBlob != null) {
+                    File givenFileContent = Utils.join(BLOBS_DIR, givenBranchBlob);
+
+                    conflictContent += readByteObjectAsString(givenFileContent);
+                } else {
+                    conflictContent += "";
+                }
+                conflictContent += ">>>>>>>";
+
+                 File fileInCWD = Utils.join(CWD, file);
+            if (fileInCWD.exists()) {
+                Utils.restrictedDelete(fileInCWD);
+            }
+            Utils.writeContents(fileInCWD, conflictContent);
+
+                add(file);
+
+            }
+
+            mergeCommit("Merged " + givenBranch.getBranchName() + " into " + currentBranch.getBranchName(), givenBranchCommit.getUID());
+            if (mergeConflict) {
+                System.out.println("Encountered a merge conflict.");
+            }
+
+
+
+
+
+
+
+
+
+            //tested ok
+
+
+
+
+        }
+
+
+
+
+
+
 
     }
 
@@ -1075,7 +1356,43 @@ commit.
         System.out.println(newFileMap);
 
         //We update the message, new parent commit, and new file map
+
         Commit newCommit = new Commit(message, newParentCommit, newFileMap);
+        //if staging area has 'rm' for a file, it will be deleted in WD when commiting// no you do not need to, delete it in rm method
+
+        //restore the staging area
+        Map<String, String> clearedStagingArea = new HashMap<String, String>();
+        System.out.println("The current commit mapping is " + newCommit.getFilesMap());
+        StagingArea.saveStagingArea(clearedStagingArea);
+
+
+    }
+    //added a feature of a second parent
+       public static void mergeCommit(String message, String secondParentCommitID) throws GitletException {
+
+        Map<String, String> stagingArea = StagingArea.readStagingArea();
+        if (stagingArea.size() == 0) {
+            throw new GitletException("No changes added to the commit.");
+
+        }
+        //Get the current commit
+        Commit currentCommit = Commit.findCurrentCommit();
+        //String message, ArrayList<String> parentCommit, Map<String,String> filesMap
+        ArrayList<String> newParentCommit = currentCommit.getParentCommit();
+        //Parent commit is an alist of commits, the left most commits or the earliest commit on the index 0
+        //We will add the current commit to the new commit's parent commit
+        //[commit 0, commit 1,..... current commit] <-- newCommit
+        newParentCommit.add(currentCommit.getUID());
+
+        Map<String, String> currentFileMap = currentCommit.getFilesMap();
+        Map<String, String> newFileMap = StagingArea.updateCommitMap(stagingArea, currentFileMap);
+        System.out.println(newFileMap);
+
+        //get the parent commits of the given branch commit and add that branch commit to the parent commits of the new commit
+           ArrayList<String> secondParentCommit = Commit.findCommitByUID(secondParentCommitID).getParentCommit();
+           secondParentCommit.add(secondParentCommitID);
+          //We update the message, new parent commit, and new file map
+        Commit newCommit = new Commit(message, newParentCommit,secondParentCommit, newFileMap);
         //if staging area has 'rm' for a file, it will be deleted in WD when commiting// no you do not need to, delete it in rm method
 
         //restore the staging area
