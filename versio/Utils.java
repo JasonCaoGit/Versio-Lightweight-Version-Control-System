@@ -1,4 +1,4 @@
-package gitlet;
+package versio;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -68,10 +68,10 @@ class    Utils {
     /** Deletes FILE if it exists and is not a directory.  Returns true
      *  if FILE was deleted, and false otherwise.  Refuses to delete FILE
      *  and throws IllegalArgumentException unless the directory designated by
-     *  FILE also contains a directory named .gitlet. */
+     *  FILE also contains a directory named .versio. */
     static boolean restrictedDelete(File file) {
         if (!(new File(file.getParentFile(), ".gitlet")).isDirectory()) {
-            throw new IllegalArgumentException("not .gitlet working directory");
+            throw new IllegalArgumentException("not .versio working directory");
         }
         if (!file.isDirectory()) {
             return file.delete();
@@ -83,7 +83,7 @@ class    Utils {
     /** Deletes the file named FILE if it exists and is not a directory.
      *  Returns true if FILE was deleted, and false otherwise.  Refuses
      *  to delete FILE and throws IllegalArgumentException unless the
-     *  directory designated by FILE also contains a directory named .gitlet. */
+     *  directory designated by FILE also contains a directory named .versio. */
     static boolean restrictedDelete(String file) {
         return restrictedDelete(new File(file));
     }

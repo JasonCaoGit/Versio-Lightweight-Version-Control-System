@@ -1,14 +1,14 @@
-package gitlet;
+package versio;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author Zhuoyuan Cao
  */
 public class Main {
 
-    /** Usage: java gitlet.Main ARGS, where ARGS contains
+    /** Usage: java versio.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
-    public static void main(String[] args) throws GitletException {
+    public static void main(String[] args) throws VersioException {
         // TODO: what if args is empty?
         if (args.length < 1) {
             System.out.println("Please enter your command!");
@@ -16,9 +16,9 @@ public class Main {
 
         }
         String firstArg = args[0];
-        //Creates a new .gitlet file in the current directory
+        //Creates a new .versio file in the current directory
         /*
-        * Have the initial commit, no files tracked stored in .gitlet
+        * Have the initial commit, no files tracked stored in .versio
         * Commit msg = "initial commit"
         * Create a new branch: master, points to the above commit
         * Set the commit metadeta, its time is 1970...
@@ -29,7 +29,7 @@ public class Main {
             case "init":
                 try {
                     Repository.initRepository();
-                } catch (GitletException e) {
+                } catch (VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -51,10 +51,10 @@ public class Main {
             case "commit":
                 try {
                        if (args.length == 1) {
-                        throw new GitletException("Please enter a commit message");
+                        throw new VersioException("Please enter a commit message");
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -62,7 +62,7 @@ public class Main {
                 String message = args[1];
                 try {
                     Repository.commit(message);
-                } catch (GitletException e) {
+                } catch (VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -71,17 +71,17 @@ public class Main {
             case "rm":
                 try {
                        if (args.length == 1) {
-                           throw new GitletException("Please enter the file to remove");
+                           throw new VersioException("Please enter the file to remove");
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
                 String file = args[1];
                 try {
                        Repository.rm(file);
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -97,10 +97,10 @@ public class Main {
             case "find":
                 try {
                        if (args.length == 1) {
-                           throw new GitletException("Please enter the file commit message to find!");
+                           throw new VersioException("Please enter the file commit message to find!");
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -108,7 +108,7 @@ public class Main {
                 String commitMessage = args[1];
                 try {
                     Repository.find(commitMessage);
-                } catch (GitletException e) {
+                } catch (VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -116,17 +116,17 @@ public class Main {
             case "branch":
                 try {
                     if (args.length == 1) {
-                        throw new GitletException("Please enter the branch name");
+                        throw new VersioException("Please enter the branch name");
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
                 String branchName = args[1];
                 try {
                     Repository.branch(branchName);
-                } catch (GitletException e) {
+                } catch (VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -135,11 +135,11 @@ public class Main {
             case "checkout":
                 try {
                     if (args.length == 1) {
-                        throw new GitletException("Please enter the branchName or -- file or commitID -- file!");
+                        throw new VersioException("Please enter the branchName or -- file or commitID -- file!");
 
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -149,7 +149,7 @@ public class Main {
                     try {
                         String fileName = args[2];
                         Repository.checkoutFile(fileName);
-                    } catch (GitletException e) {
+                    } catch (VersioException e) {
                         System.out.println(e.getMessage());
                         System.exit(0);
                     };
@@ -163,7 +163,7 @@ public class Main {
                         String commitID = args[1];
                         String fileName = args[3];
                         Repository.checkoutCommitFile(commitID, fileName);
-                    } catch (GitletException e) {
+                    } catch (VersioException e) {
                         System.out.println(e.getMessage());
                         System.exit(0);
                     };
@@ -176,7 +176,7 @@ public class Main {
                     try {
                         String branchToCheckOut = args[1];
                         Repository.checkoutBranch(branchToCheckOut);
-                    } catch (GitletException e) {
+                    } catch (VersioException e) {
                         System.out.println(e.getMessage());
                         System.exit(0);
                     }
@@ -193,18 +193,18 @@ public class Main {
             case "rm-branch":
                 try {
                     if (args.length == 1) {
-                        throw new GitletException("Please enter the branchName!");
+                        throw new VersioException("Please enter the branchName!");
 
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
                 try {
                     String branch = args[1];
                 Repository.rmBranch(branch);
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -214,18 +214,18 @@ public class Main {
             case "reset":
                 try {
                     if (args.length == 1) {
-                        throw new GitletException("Please enter the branchName!");
+                        throw new VersioException("Please enter the branchName!");
 
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
                 try {
                     String commitID = args[1];
                     Repository.reset(commitID);
-                } catch (GitletException e) {
+                } catch (VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -234,11 +234,11 @@ public class Main {
             case "merge":
                 try {
                     if (args.length == 1) {
-                        throw new GitletException("Please enter the branchName!");
+                        throw new VersioException("Please enter the branchName!");
 
 
                 }
-                }catch(GitletException e) {
+                }catch(VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }
@@ -246,7 +246,7 @@ public class Main {
                     String branchToMerge = args[1];
 
                     Repository.merge(branchToMerge);
-                } catch (GitletException e) {
+                } catch (VersioException e) {
                     System.out.println(e.getMessage());
                     System.exit(0);
                 }

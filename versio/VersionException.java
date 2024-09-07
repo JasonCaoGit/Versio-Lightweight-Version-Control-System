@@ -1,19 +1,19 @@
-package gitlet;
+package versio;
 
 /** General exception indicating a Gitlet error.  For fatal errors, the
  *  result of .getMessage() is the error message to be printed.
  *  @author P. N. Hilfinger
  */
-class GitletException extends RuntimeException {
+class VersioException extends RuntimeException {
 
 
-    /** A GitletException with no message. */
-    GitletException() {
+    /** A VersioException with no message. */
+    VersioException() {
         super();
     }
 
-    /** A GitletException MSG as its message. */
-    GitletException(String msg) {
+    /** A VersioException MSG as its message. */
+    VersioException(String msg) {
         super(msg);
     }
 

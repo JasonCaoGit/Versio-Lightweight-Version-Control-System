@@ -1,4 +1,4 @@
-package gitlet;
+package versio;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 
 /**
- * Represents a gitlet commit object.
+ * Represents a versio commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *

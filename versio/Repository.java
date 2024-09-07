@@ -1,18 +1,17 @@
-package gitlet;
+package versio;
 
 import java.io.File;
-import static gitlet.Utils.*;
+import static versio.Utils.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 // TODO: any imports you need here
 
 /**
- * Represents a gitlet repository.
+ * Represents a versio repository.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
@@ -78,7 +77,7 @@ public class Repository {
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     /**
-     * The .gitlet directory.
+     * The .versio directory.
      */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     public static final File COMMITS_DIR = join(GITLET_DIR, "Commits");
@@ -158,14 +157,14 @@ first.
     *
      */
 
-    public static void merge(String branchName) throws GitletException {
+    public static void merge(String branchName) throws VersioException {
         Map<String, String> stagingArea = StagingArea.readStagingArea();
         if (stagingArea.size() > 0) {
-            throw new GitletException(" You have uncommitted changes.");
+            throw new VersioException(" You have uncommitted changes.");
         }
         boolean doesExist = Branch.isDuplicated(branchName);
         if (!doesExist) {
-            throw new GitletException("A branch with that name does not exist.");
+            throw new VersioException("A branch with that name does not exist.");
 
 
 
@@ -173,7 +172,7 @@ first.
 
         Branch currentBranch = Branch.findCurrentBranch();
         if(currentBranch.getBranchName().equals(branchName)) {
-            throw new GitletException("Not supposed to merge a branch with itself");
+            throw new VersioException("Not supposed to merge a branch with itself");
         }
 
 /*
@@ -522,11 +521,11 @@ first.
 an untracked file in the way; delete it, or add and commit it first.
      * */
 
-    public static void reset(String commitID) throws GitletException {
+    public static void reset(String commitID) throws VersioException {
 
         Commit commitToReset = Commit.findCommitByUID(commitID);
         if (commitToReset == null) {
-            throw new GitletException("No commit with that id exists.");
+            throw new VersioException("No commit with that id exists.");
         }
 
 
@@ -552,7 +551,7 @@ an untracked file in the way; delete it, or add and commit it first.
                 String blobIDInBranch = commitToResetFilesMap.get(untracked);
                 File untrackedFile = Utils.join(CWD, untracked);
                 if (!compareFileContentByBlob(untrackedFile, blobIDInBranch)) {
-                    throw new GitletException("There is an untracked file in the way; delete it, or add and commit it first");
+                    throw new VersioException("There is an untracked file in the way; delete it, or add and commit it first");
 
                 }
             }
@@ -587,14 +586,14 @@ branch with that name does not exist
 *
 * 2 if the branch is the current branch, error Cannot remove the current branch.
      * */
-    public static void rmBranch(String branch) throws GitletException {
+    public static void rmBranch(String branch) throws VersioException {
         Branch branchToRemove = Branch.getBranchByName(branch);
         if (branchToRemove == null) {
-            throw new GitletException("A branch with that name does not exist");
+            throw new VersioException("A branch with that name does not exist");
         }
         Branch currentBranch = Branch.findCurrentBranch();
         if (currentBranch.getBranchName().equals(branch)) {
-            throw new GitletException("Not supposed to remove the current branch.");
+            throw new VersioException("Not supposed to remove the current branch.");
         }
 
         File filesTrackInCurrentCommit = Utils.join(Branches_DIR, branch);
@@ -638,7 +637,7 @@ branch with that name does not exist
     *
     *
     * */
-    public static void checkoutBranch(String branchToCheckout) throws GitletException {
+    public static void checkoutBranch(String branchToCheckout) throws VersioException {
         ArrayList<String> branches = Branch.getCurrentBranches();
         boolean branchFound = false;
         for (String branch : branches) {
@@ -647,7 +646,7 @@ branch with that name does not exist
             }
         }
         if (branchFound == false) {
-            throw new GitletException("No such branch exists.");
+            throw new VersioException("No such branch exists.");
         }
 
         //if the current branch equals the branch to check out
@@ -657,7 +656,7 @@ branch with that name does not exist
             System.out.println(currentBranch.getBranchName());
             System.out.println(branchToCheckout);
             ;
-            throw new GitletException("No need to checkout the current branch");
+            throw new VersioException("No need to checkout the current branch");
         }
 
 
@@ -691,7 +690,7 @@ in the way; delete it, or add and commit it first. Untracked means it is not sta
                 String blobIDInBranch = branchCommitFileMap.get(untracked);
                 File untrackedFile = Utils.join(CWD, untracked);
                 if (!compareFileContentByBlob(untrackedFile, blobIDInBranch)) {
-                    throw new GitletException("There is an untracked file in the way; delete it, or add and commit it first");
+                    throw new VersioException("There is an untracked file in the way; delete it, or add and commit it first");
 
                 }
             }
@@ -749,7 +748,7 @@ in the way; delete it, or add and commit it first. Untracked means it is not sta
     *
     The content of any file is byte[] and the byte[] object is stored in files, read the file and write the byte[] back to the file
     * */
-    public static void checkoutFile(String fileToCheckout) throws GitletException {
+    public static void checkoutFile(String fileToCheckout) throws VersioException {
         Commit currentCommit = Commit.findCurrentCommit();
         String blobIDInCommit = null;
         boolean found = false;
@@ -762,7 +761,7 @@ in the way; delete it, or add and commit it first. Untracked means it is not sta
         }
         if (found == false) {
 
-            throw new GitletException("File does not exist in that commit.");
+            throw new VersioException("File does not exist in that commit.");
         }
         //Set the file you wanna rewrite
         File fileInCWD = Utils.join(CWD, fileToCheckout);
@@ -783,7 +782,7 @@ in the way; delete it, or add and commit it first. Untracked means it is not sta
     }
 
 
-    public static void checkoutFile(String commitID, String fileToCheckout) throws GitletException {
+    public static void checkoutFile(String commitID, String fileToCheckout) throws VersioException {
         Commit currentCommit = Commit.findCommitByUID(commitID);
         String blobIDInCommit = null;
         boolean found = false;
@@ -796,7 +795,7 @@ in the way; delete it, or add and commit it first. Untracked means it is not sta
         }
         if (found == false) {
 
-            throw new GitletException("File does not exist in that commit.");
+            throw new VersioException("File does not exist in that commit.");
         }
         //Set the file you wanna rewrite
         File fileInCWD = Utils.join(CWD, fileToCheckout);
@@ -1177,9 +1176,9 @@ with that name already exists.
 *
 *
     * */
-    public static void branch(String branchName) throws GitletException {
+    public static void branch(String branchName) throws VersioException {
         if (Branch.isDuplicated(branchName)) {
-            throw new GitletException("A branch with that name already exists.");
+            throw new VersioException("A branch with that name already exists.");
         }
         Commit currentCommit = Commit.findCurrentCommit();
         Branch newBranch = new Branch(branchName, currentCommit.getUID(), false);
@@ -1194,7 +1193,7 @@ with that name already exists.
      *
      *
      * */
-    public static void find(String message) throws GitletException {
+    public static void find(String message) throws VersioException {
         ArrayList<String> commitFiles = listAllFiles(COMMITS_DIR);
         boolean isFound = false;
         for (String commitFile : commitFiles) {
@@ -1207,7 +1206,7 @@ with that name already exists.
         }
 
         if (!isFound) {
-            throw new GitletException("Found no commit with that message.");
+            throw new VersioException("Found no commit with that message.");
         }
     }
 
@@ -1282,7 +1281,7 @@ with that name already exists.
 
      *
      * */
-    public static void rm(String file) throws GitletException {
+    public static void rm(String file) throws VersioException {
         Map<String, String> stagingArea = StagingArea.readStagingArea();
         boolean containsInStagingArea = stagingArea.containsKey(file);
         if (containsInStagingArea) {
@@ -1302,7 +1301,7 @@ with that name already exists.
 
         }
         if (containsInStagingArea == false && containsInCurrentCommit == false) {
-            throw new GitletException("No reason to remove the file");
+            throw new VersioException("No reason to remove the file");
         }
         StagingArea.saveStagingArea(stagingArea);
 
@@ -1335,11 +1334,11 @@ commit.
 *
 *
     * */
-    public static void commit(String message) throws GitletException {
+    public static void commit(String message) throws VersioException {
 
         Map<String, String> stagingArea = StagingArea.readStagingArea();
         if (stagingArea.size() == 0) {
-            throw new GitletException("No changes added to the commit.");
+            throw new VersioException("No changes added to the commit.");
 
         }
         //Get the current commit
@@ -1368,11 +1367,11 @@ commit.
 
     }
     //added a feature of a second parent
-       public static void mergeCommit(String message, String secondParentCommitID) throws GitletException {
+       public static void mergeCommit(String message, String secondParentCommitID) throws VersioException {
 
         Map<String, String> stagingArea = StagingArea.readStagingArea();
         if (stagingArea.size() == 0) {
-            throw new GitletException("No changes added to the commit.");
+            throw new VersioException("No changes added to the commit.");
 
         }
         //Get the current commit
@@ -1405,9 +1404,9 @@ commit.
 
 
     /* TODO: fill in the rest of this class. */
-    //Creates a new .gitlet file in the current directory
+    //Creates a new .versio file in the current directory
     /*
-     * Have the initial commit, no files tracked stored in .gitlet
+     * Have the initial commit, no files tracked stored in .versio
      * Commit msg = "initial commit"
      * Create a new branch: master, points to the above commit
      * Set the commit metadeta, its time is 1970...
@@ -1415,11 +1414,11 @@ commit.
      * Exits if error occured, A Gitlet version-control system already exists in the current directory
      * puts a blank map in staging area
      * */
-    public static void initRepository() throws GitletException {
+    public static void initRepository() throws VersioException {
 
         File gitletDir = GITLET_DIR;
         if (gitletDir.exists()) {
-            throw new GitletException("A Gitlet version-control system already exists in the current directory");
+            throw new VersioException("A Gitlet version-control system already exists in the current directory");
         }
         gitletDir.mkdir();
         File stagingArea = STAGING_AREA;
@@ -1432,7 +1431,7 @@ commit.
 
     }
 
-    public static ArrayList<String> listAllFiles(File dir) throws GitletException {
+    public static ArrayList<String> listAllFiles(File dir) throws VersioException {
         if (Utils.plainFilenamesIn(dir) == null) {
             return new ArrayList<String>();
         }
@@ -1482,7 +1481,7 @@ commit.
     If the added file is the same as what is the current commit,
     do not add and remove it if it is already inside
     * */
-    public static void add(String... addedFile) throws GitletException {
+    public static void add(String... addedFile) throws VersioException {
         ArrayList<String> CWDFiles = listAllFiles(CWD);
         System.out.println(CWDFiles);
 

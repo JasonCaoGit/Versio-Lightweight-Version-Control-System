@@ -29,7 +29,7 @@ default:
 	$(RMAKE) PYTHON=$(PYTHON) check
 
 check:
-	@echo "Testing application gitlet.Main..."
+	@echo "Testing application versio.Main..."
 	$(TESTER) $(TESTER_FLAGS) $(TESTS)
 
 # 'make clean' will clean up stuff you can reconstruct.
