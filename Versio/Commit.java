@@ -1,4 +1,4 @@
-package versio;
+package Versio;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 
 /**
- * Represents a versio commit object.
+ * Represents a Versio commit object.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *

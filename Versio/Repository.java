@@ -1,7 +1,7 @@
-package versio;
+package Versio;
 
 import java.io.File;
-import static versio.Utils.*;
+import static Versio.Utils.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.Map;
 // TODO: any imports you need here
 
 /**
- * Represents a versio repository.
+ * Represents a Versio repository.
  *  TODO: It's a good idea to give a description here of what else this Class
  *  does at a high level.
  *
@@ -77,7 +77,7 @@ public class Repository {
 
     public static final File CWD = new File(System.getProperty("user.dir"));
     /**
-     * The .versio directory.
+     * The .Versio directory.
      */
     public static final File GITLET_DIR = join(CWD, ".gitlet");
     public static final File COMMITS_DIR = join(GITLET_DIR, "Commits");
@@ -1404,9 +1404,9 @@ commit.
 
 
     /* TODO: fill in the rest of this class. */
-    //Creates a new .versio file in the current directory
+    //Creates a new .Versio file in the current directory
     /*
-     * Have the initial commit, no files tracked stored in .versio
+     * Have the initial commit, no files tracked stored in .Versio
      * Commit msg = "initial commit"
      * Create a new branch: master, points to the above commit
      * Set the commit metadeta, its time is 1970...

@@ -1,7 +1,7 @@
 # This makefile is defined to give you the following targets:
 #
 #    default: The default target: Compiles the program in package db61b.
-#    check: Compiles the versio package, if needed, and then performs the
+#    check: Compiles the Versio package, if needed, and then performs the
 #           tests described in testing/Makefile.
 #    clean: Remove regeneratable files (such as .class files) produced by
 #           other targets and Emacs backup files.
@@ -14,7 +14,7 @@
 # that you ask questions.  The Lab Reader contains documentation.
 
 # Name of package containing main procedure 
-PACKAGE = versio
+PACKAGE = Versio
 
 # The name of the Python 3 program, used in the 'check' target.  If your system
 # has a different name for this program (such as just "python"), run

@@ -13,7 +13,7 @@ Usage: python3 staff-runner.py OPTIONS TEST.in ...
    OPTIONS may include
        --keep         Keep test directories
        --timeout=SEC  Default number of seconds allowed to each execution
-                      of versio.
+                      of Versio.
        --src=SRC      Use SRC instead of "src" as the subdirectory containing
                       files referenced by + and =.
        --tolerance=N  Set the maximum allowed edit distance between program
@@ -40,7 +40,7 @@ The instructions each have one of the following forms:
           the main directory for this test.  If DIR is missing, changes
           back to the default directory.  This command is principally
           intended to let you set up remote repositories.
-   T N    Set the timeout for versio commands in the rest of this test to N
+   T N    Set the timeout for Versio commands in the rest of this test to N
           seconds.
    + NAME F
           Copy the contents of src/F into a file named NAME.
@@ -51,7 +51,7 @@ The instructions each have one of the following forms:
    LINE2
    ...
    <<<
-          Run staff-versio with COMMAND ARGUMENTS as its parameters.  Compare
+          Run staff-Versio with COMMAND ARGUMENTS as its parameters.  Compare
           its output with LINE1, LINE2, etc., reporting an error if there is
           "sufficient" discrepency.  The <<< delimiter may be followed by
           an asterisk (*), in which case, the preceding lines are treated as
@@ -88,7 +88,7 @@ sp21-s***
   ├── library-sp21
   │    └── ...
   ├── proj2
-  │   ├── versio
+  │   ├── Versio
   │   ├── testing <==== This should be your CWD
   │   │    ├── runner.py
   │   │    └── ...
@@ -106,7 +106,7 @@ Also check that your REPO_DIR environment variable is the path to your
 That's what mine looks like. Go back to lab1 if you are still having issues"""
 
 JAVA_COMMAND = "java"
-STAFF_COMMAND = "staff-versio"
+STAFF_COMMAND = "staff-Versio"
 JAVAC_COMMAND = "javac -d ."
 JVM_COMMAND = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
 TIMEOUT = 10
@@ -221,7 +221,7 @@ def doExecute(cmnd, dir, timeout):
 
         return "OK", out
     except CalledProcessError as excp:
-        return ("java versio.Main exited with code {}".format(excp.args[0]),
+        return ("java Versio.Main exited with code {}".format(excp.args[0]),
                 excp.output)
     except TimeoutExpired:
         return "timeout", None
@@ -429,7 +429,7 @@ if __name__ == "__main__":
     verbose = False
     superverbose = False
     src_dir = 'src'
-    gitlet_dir = join(dirname(abspath(getcwd())), "versio")
+    gitlet_dir = join(dirname(abspath(getcwd())), "Versio")
     output_tolerance = 0
 
     try:
@@ -484,7 +484,7 @@ if __name__ == "__main__":
             print("FAILED ({})".format(excp.args[0]))
             fails += 1
 
-    cleanTempDir(join(abspath(getcwd()), "versio"))
+    cleanTempDir(join(abspath(getcwd()), "Versio"))
 
     print()
     print("Ran {} tests. ".format(num_tests), end="")

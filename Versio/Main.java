@@ -1,11 +1,11 @@
-package versio;
+package Versio;
 
 /** Driver class for Gitlet, a subset of the Git version-control system.
  *  @author Zhuoyuan Cao
  */
 public class Main {
 
-    /** Usage: java versio.Main ARGS, where ARGS contains
+    /** Usage: java Versio.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND1> <OPERAND2> ... 
      */
     public static void main(String[] args) throws VersioException {
@@ -16,9 +16,9 @@ public class Main {
 
         }
         String firstArg = args[0];
-        //Creates a new .versio file in the current directory
+        //Creates a new .Versio file in the current directory
         /*
-        * Have the initial commit, no files tracked stored in .versio
+        * Have the initial commit, no files tracked stored in .Versio
         * Commit msg = "initial commit"
         * Create a new branch: master, points to the above commit
         * Set the commit metadeta, its time is 1970...

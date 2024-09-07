@@ -14,9 +14,9 @@ Usage: python3 tester.py OPTIONS TEST.in ...
        --show=N       Show details on up to N tests.
        --show=all     Show details on all tests.
        --keep         Keep test directories
-       --progdir=DIR  Directory or JAR files containing versio application
+       --progdir=DIR  Directory or JAR files containing Versio application
        --timeout=SEC  Default number of seconds allowed to each execution
-                      of versio.
+                      of Versio.
        --src=SRC      Use SRC instead of "src" as the subdirectory containing
                       files referenced by + and =.
        --debug        Allows you to step through commands one by one and
@@ -45,7 +45,7 @@ The instructions each have one of the following forms:
           the main directory for this test.  If DIR is missing, changes
           back to the default directory.  This command is principally
           intended to let you set up remote repositories.
-   T N    Set the timeout for versio commands in the rest of this test to N
+   T N    Set the timeout for Versio commands in the rest of this test to N
           seconds.
    + NAME F
           Copy the contents of src/F into a file named NAME.
@@ -56,12 +56,12 @@ The instructions each have one of the following forms:
    LINE2
    ...
    <<<
-          Run versio.Main with COMMAND ARGUMENTS as its parameters.  Compare
+          Run Versio.Main with COMMAND ARGUMENTS as its parameters.  Compare
           its output with LINE1, LINE2, etc., reporting an error if there is
           "sufficient" discrepency.  The <<< delimiter may be followed by
           an asterisk (*), in which case, the preceding lines are treated as 
           Python regular expressions and matched accordingly. The directory
-          or JAR file containing the versio.Main program is assumed to be
+          or JAR file containing the Versio.Main program is assumed to be
           in directory DIR specifed by --progdir (default is ..).
    = NAME F
           Check that the file named NAME is identical to src/F, and report an
@@ -89,7 +89,7 @@ faulty TEST.in files."""
 TIMEOUT = 10
 
 JAVA_COMMAND = "java -ea"
-GITLET_CLASS = "versio.Main"
+GITLET_CLASS = "Versio.Main"
 JVM_OPTIONS = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
 DEBUG = False
@@ -165,7 +165,7 @@ def doExecute(cmnd, dir, timeout, line_num):
         skip_first_line = False
 
         if DEBUG:
-            print("[line {}]: versio {}".format(line_num, cmnd))
+            print("[line {}]: Versio {}".format(line_num, cmnd))
             input_prompt = ">>> "
             next_cmd = input(input_prompt)
             while(next_cmd not in "ns"):
@@ -179,7 +179,7 @@ def doExecute(cmnd, dir, timeout, line_num):
         out = doCommand(full_cmnd, timeout, skip_first_line)
         return "OK", out
     except CalledProcessError as excp:
-        return ("java versio.Main exited with code {}".format(excp.args[0]),
+        return ("java Versio.Main exited with code {}".format(excp.args[0]),
                 excp.output)
     except TimeoutExpired:
         return "timeout", None
@@ -427,11 +427,11 @@ if __name__ == "__main__":
             k = 10
             while k > 0 and access(prog_dir, W_OK):
                 k -= 1
-                if exists(join(prog_dir, 'versio', 'Main.class')):
+                if exists(join(prog_dir, 'Versio', 'Main.class')):
                     break
                 prog_dir = dirname(prog_dir)
             else:
-                print("Could not find versio.Main.", file=sys.stderr)
+                print("Could not find Versio.Main.", file=sys.stderr)
                 sys.exit(1)
     except GetoptError:
         Usage()
